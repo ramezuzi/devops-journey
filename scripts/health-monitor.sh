@@ -1,13 +1,15 @@
 #!/bin/bash
 set -euo pipefail
 
-LOG="/var/log/health-monitor.log"
-CPU_THRESHOLD=80
-MEM_THRESHOLD=80
-DISK_THRESHOLD=80
+#System health monitor
 
-log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1" | tee -a "$LOG"; }
-alert() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ALERT: $1" | tee -a "$LOG"; }
+LOG="/var/log/health-monitor.log"
+CPU_THERSHOLD=80
+MEM_THERSHOLD=80
+DISK_THERSHOLD=80
+
+log() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] $1 | tee -a "$LOG"; }
+alert() { echo "[$(date '+%Y-%m-%d %H:%M:%S')] ALERT: $1 | tee -a "$LOG"; }
 
 check_cpu() {
     local cpu_idle
@@ -18,6 +20,7 @@ check_cpu() {
         alert "CPU usage ${cpu_used}% exceeds threshold ${CPU_THRESHOLD}%"
     fi
 }
+
 
 check_memory() {
     local mem_total mem_used mem_pct
@@ -30,6 +33,8 @@ check_memory() {
     fi
 }
 
+
+
 check_disk() {
     local disk_pct
     disk_pct=$(df / | tail -1 | awk '{print $5}' | tr -d '%')
@@ -38,6 +43,8 @@ check_disk() {
         alert "Disk usage ${disk_pct}% exceeds threshold ${DISK_THRESHOLD}%"
     fi
 }
+
+
 
 check_services() {
     local services=("ssh" "cron")
@@ -50,6 +57,8 @@ check_services() {
     done
 }
 
+
+# ── MAIN ─────────────────────────────────
 log "=== Health check started ==="
 check_cpu
 check_memory
