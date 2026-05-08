@@ -3,26 +3,23 @@ name: CI Pipeline
 on:
   push:
     branches: [ main ]
-    pull_request:
-      branches: [ main ]
+  pull_request:
+    branches: [ main ]
 
 jobs:
   lint-and-test:
     runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
 
+      - name: Check scripts exist
+        run: ls -la scripts/
 
-steps:
-  - name: Checkout code
-    uses: actions/checkout@v4
+      - name: Lint bash scripts
+        run: |
+          sudo apt-get install -y shellcheck
+          shellcheck scripts/*.sh
 
-  - name: check bash scripts exist
-    run: ls -la scripts/
-
-  - name: Run health monitor (dry run)
-    run: |
-      chmod +x scripts/health-monitor.sh
-      bash -n scripts/health-monitor.sh
-      echo "Syntax OK"
-
-  - name: Print success
-    run: echo "All checks passed!"
+      - name: Print success
+        run: echo "All checks passed!"
